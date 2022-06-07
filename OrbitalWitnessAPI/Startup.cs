@@ -31,6 +31,9 @@ namespace OrbitalWitnessAPI
 
             services.AddSingleton<ISingletonOperationCache, SingletonOperationCache>();
 
+            services.AddScoped<IScheduleManager, ScheduleManager>();
+            services.AddScoped<IScheduleParser, ScheduleParser>();
+
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo

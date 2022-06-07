@@ -1,4 +1,5 @@
 ﻿using EyeExamApi.DTOs;
+using Microsoft.Extensions.Configuration;
 using OrbitalWitnessAPI.Interfaces;
 using Rest;
 using System.Collections.Generic;
@@ -6,19 +7,21 @@ using System.Collections.Generic;
 
 namespace OrbitalWitnessAPI
 {
-    public class ScheduleManager 
+    public class ScheduleManager : IScheduleManager
     {
-        IScheduleParser _scheduleParser;
+        private IScheduleParser _scheduleParser;
+        private IConfigurationRoot _configuration;
 
-        public ScheduleManager(IScheduleParser scheduleParser)
+        public ScheduleManager(IScheduleParser scheduleParser, IConfiguration configuration)
         {
             _scheduleParser = scheduleParser;
+            _configuration = (IConfigurationRoot)configuration;
         }
 
         public IEnumerable<ParsedScheduleNoticeOfLease> GetSchedules()
         {
             var restClient = new RestClient();
-            var outcomes = restClient.GetFromRestService("https://localhost:7203/schedules");
+            var outcomes = restClient.GetFromRestService(_configuration.GetSection("MicroservicesConnections").GetSection("RawDataScheduleService").Value);
 
             return _scheduleParser.Parse(outcomes);
         }

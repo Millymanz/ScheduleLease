@@ -1,5 +1,6 @@
 ﻿using EyeExamApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OrbitalWitnessAPI.Interfaces;
 using Rest;
@@ -17,11 +18,17 @@ namespace OrbitalWitnessAPI.Controllers
         private readonly ILogger<LeaseController> _logger;
 
         private readonly ISingletonOperationCache _singletonCache;
+        private IConfigurationRoot _configuration;
 
-        public LeaseController(ILogger<LeaseController> logger, ISingletonOperationCache singletonCache)
+        private IScheduleManager _scheduleMgr;
+
+        public LeaseController(ILogger<LeaseController> logger, ISingletonOperationCache singletonCache, IScheduleManager scheduleMgr, IConfiguration configuration)
         {
             _logger = logger;
             _singletonCache = singletonCache;
+            _configuration = (IConfigurationRoot)configuration;
+
+            _scheduleMgr = scheduleMgr;
         }
 
         [HttpGet]
@@ -31,9 +38,7 @@ namespace OrbitalWitnessAPI.Controllers
 
             if (_singletonCache.GetCount() == 0)
             {
-                var scheduleMgr = new ScheduleManager(new ScheduleParser());
-
-                var schedules = scheduleMgr.GetSchedules();
+                var schedules = _scheduleMgr.GetSchedules();
 
                 foreach (var schedule in schedules)
                 {
