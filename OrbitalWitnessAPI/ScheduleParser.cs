@@ -11,22 +11,15 @@ namespace OrbitalWitnessAPI
         public IEnumerable<ParsedScheduleNoticeOfLease> Parse(string data)
         {
             var result = new List<ParsedScheduleNoticeOfLease>();
-            try
-            {
-                var json = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RawScheduleNoticeOfLease>>(data);
+            var json = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RawScheduleNoticeOfLease>>(data);
 
-                if (json != null)
-                {
-                    foreach (var item in json)
-                    {
-                        var parsedSchedule = ConvertRawSchedule(item);
-                        result.Add(parsedSchedule);
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (json != null)
             {
-                ex.ToString();
+                foreach (var item in json)
+                {
+                    var parsedSchedule = ConvertRawSchedule(item);
+                    result.Add(parsedSchedule);
+                }
             }
 
             return result;
@@ -46,11 +39,8 @@ namespace OrbitalWitnessAPI
                 var lesseesTitleData = new List<string>();
                 var notesData = new List<string>();
 
-
                 for (int row = 0; row < rawScheduleNoticeOfLease.EntryText.Count; row++)
                 {
-                    try
-                    {
                         InitialiseNotes(notesData, rawScheduleNoticeOfLease.EntryText[row]);
 
                         var columnData = rawScheduleNoticeOfLease.EntryText[row].Split(spaceSplits, StringSplitOptions.None);
@@ -58,15 +48,7 @@ namespace OrbitalWitnessAPI
                         columnData = OrganiseData(columnData, row);
 
                         PopulateColumnData(columnData, registrationDateAndPlanRefData, propertyDescriptionData, dateOfLeaseAndTermData, lesseesTitleData, notesData);
-
-
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.ToString();
-                    }
                 }
-
 
                 parsedScheduleNotice.EntryNumber = Convert.ToInt32(rawScheduleNoticeOfLease.EntryNumber);
 
@@ -79,11 +61,9 @@ namespace OrbitalWitnessAPI
                 parsedScheduleNotice.RegistrationDateAndPlanRef = ConvertToSentence(registrationDateAndPlanRefData);
                 parsedScheduleNotice.DateOfLeaseAndTerm = ConvertToSentence(dateOfLeaseAndTermData);
                 parsedScheduleNotice.PropertyDescription = ConvertToSentence(propertyDescriptionData);
-
-                notesData.Reverse();
+                
                 parsedScheduleNotice.Notes = notesData;
             }
-
             return parsedScheduleNotice;
         }
 
@@ -126,7 +106,6 @@ namespace OrbitalWitnessAPI
                 }
             }
         }
-
         private void InitialiseNotes(List<string> notesData, string entry)
         {
             bool previousNotesFlag = false;
@@ -357,7 +336,6 @@ namespace OrbitalWitnessAPI
                 {
                     regRelatedIndex = j;
                 }
-
             }
 
             if (regRelatedIndex > -1 && regRelatedIndex != 0)
@@ -379,7 +357,6 @@ namespace OrbitalWitnessAPI
                 spacesArray[i] = space;
                 space += " ";
             }
-
             return spacesArray;
         }
     }

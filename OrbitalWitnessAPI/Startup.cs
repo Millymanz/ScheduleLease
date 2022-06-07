@@ -33,6 +33,7 @@ namespace OrbitalWitnessAPI
 
             services.AddScoped<IScheduleManager, ScheduleManager>();
             services.AddScoped<IScheduleParser, ScheduleParser>();
+            services.AddScoped<IRestClient, RestClient>();
 
             services.AddSwaggerGen(options =>
             {
