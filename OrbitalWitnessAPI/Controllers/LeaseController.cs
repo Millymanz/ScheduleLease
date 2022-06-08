@@ -28,6 +28,14 @@ namespace OrbitalWitnessAPI.Controllers
             _scheduleMgr = scheduleMgr;
         }
 
+
+        /// <summary>
+        /// Fetches all available Schedule Lease Notices.
+        /// Requested data is cached after initial call
+        /// </summary>
+        /// <remarks>
+        /// Get request
+        /// </remarks>
         [HttpGet]
         public IEnumerable<ParsedScheduleNoticeOfLease> Get()
         {
