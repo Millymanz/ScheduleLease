@@ -43,27 +43,17 @@ The SingletonOperationCache is a loss form of a singleton responsible for handli
 ## Accurate Result Set and Test Coverage
 The unit testing demonstrates the accuracy of the parser and the test coverage.
 
-## Extras Points
-Extra points are available for
-* Algorithm extensibility for future cases
-* External visiblity and live diagnostics (think: logging, telemetry etc)
-* Consideration of hosting + deployment (Docker, Serverless etc) 
-* Write up of next steps to get the solution to production
-* _anything else you think is relevant, get creative_ 
 
 ## Future
 Things that could had been considered for future development include the following:-
 1. Authentication - this should be implemented in order to access the schedule lease notice data
 2. Secrets - both the EyeExamApi and OrbitalWitnessAPI should adopt secrets in order to manage and hide sensitive login details within the appsettings.json
-3. Extension of API - the current implementation only
+3. Extension of API - the current implementation only considers providing all the schedule lease notice, there is scope to cap the amount of provided and using pagination in the data. There is room to implement fetching the data by entry number or fetching the data by LesseesTitle.
+Other things that can also be considered is better management of the caching of the data, in the event that there are new entries on the EyeExamApi, the current implementation will not accomodate these new entries unless there is a complete restart of the service freeing up the singleton/cache. So this can be extended to always check for new data, and updating the cache, and the same for removing outdated entries from the cache.
+4. There is room for been better logging using things like log4net, and logging errors in database or in file for error tracking.
 
-##Production
+## Production
+It will be good idea to wrap the services into docker containers, and utilise the publish feature in visual studio to deploy the services for use.
+For major production senarios we can host the services in kubernates in the cloud using AWS or Azure, and with the use of Helm.
 
 
-## Time
-We expect this to take no more than two hours to cover the core competencies above, if you decide to spend more time to show off or hit some bonus points you're more than welcome to!
-
-If you find yourself running out of time prior to completing the entire problem, we will also review partial submissions paired with a write up of what your next steps would have been.
-
-# Submission
-Submit your result via your medium of choice (zip archive / git repo) to the recruiter or contact at Orbital Witness, and we'll be in touch with the results! 
