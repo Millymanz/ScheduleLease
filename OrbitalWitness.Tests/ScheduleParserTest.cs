@@ -5,6 +5,8 @@ using Xunit;
 using System.Linq;
 using FluentAssertions;
 using System;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace OrbitalWitness.Tests
 {
@@ -13,7 +15,10 @@ namespace OrbitalWitness.Tests
         [Fact]
         public void Can_Parse_RawScheduleData()
         {
-            var scheduleParser = new ScheduleParser();
+            var mock = new Mock<ILogger<ScheduleParser>>();
+            ILogger<ScheduleParser> logger = mock.Object;
+
+            var scheduleParser = new ScheduleParser(logger);
 
             var results = scheduleParser.Parse(RequestedData());
 
@@ -28,6 +33,55 @@ namespace OrbitalWitness.Tests
 
                 actual.Should().BeEquivalentTo(expected);
             }
+        }
+
+        [Fact]
+        public void Can_Manage_Corrupt_RawScheduleData()
+        {
+            var mock = new Mock<ILogger<ScheduleParser>>();
+            ILogger<ScheduleParser> logger = mock.Object;
+
+            var scheduleParser = new ScheduleParser(logger);
+
+            var results = scheduleParser.Parse("x lo p 12586 @ p");
+            results.Count().Should().Be(0);
+
+            results = scheduleParser.Parse("pwgfkwognjoewgnwegowwemgowejg54563634omvwomowmojtt[][][r3t3345335");
+            results.Count().Should().Be(0);
+        }
+        
+        [Fact]
+        public void Can_Parse_Single_RawScheduleData()
+        {
+            var mock = new Mock<ILogger<ScheduleParser>>();
+            ILogger<ScheduleParser> logger = mock.Object;
+
+            var scheduleParser = new ScheduleParser(logger);
+
+            var results = scheduleParser.Parse("[{\"entryNumber\":\"3\",\"entryDate\":\"\",\"entryType\":\"Schedule of Notices of Leases\",\"entryText\":[\"16.08.2013      21 Sheen Road (Ground floor   06.08.2013      TGL383606  \",\"shop)                         Beginning on               \",\"and including              \",\"6.8.2013 and               \",\"ending on and              \",\"including                  \",\"6.8.2023\"]}]");
+            results.Count().Should().Be(1);
+
+            var parsedData = new ParsedScheduleDataService();
+            var expectedData = parsedData.GetParsedScheduleNoticeOfLeases();
+            var expected = expectedData.Where(mk => mk.EntryNumber == 3).FirstOrDefault();
+            var actual = results.Where(mk => mk.EntryNumber == 3).FirstOrDefault();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void Can_Manage_Empty_RawScheduleData()
+        {
+            var mock = new Mock<ILogger<ScheduleParser>>();
+            ILogger<ScheduleParser> logger = mock.Object;
+
+            var scheduleParser = new ScheduleParser(logger);
+
+            var results = scheduleParser.Parse(" ");
+            results.Count().Should().Be(0);
+
+            results = scheduleParser.Parse(String.Empty);
+            results.Count().Should().Be(0);
         }
 
         private string RequestedData()

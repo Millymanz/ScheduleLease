@@ -1,4 +1,5 @@
 ﻿using EyeExamApi.DTOs;
+using Microsoft.Extensions.Logging;
 using OrbitalWitnessAPI.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,18 +9,32 @@ namespace OrbitalWitnessAPI
 {
     public class ScheduleParser : IScheduleParser
     {
+        private ILogger<ScheduleParser> _logger;
+        public ScheduleParser(ILogger<ScheduleParser> logger) 
+        {
+            _logger = logger;
+        }
+
         public IEnumerable<ParsedScheduleNoticeOfLease> Parse(string data)
         {
             var result = new List<ParsedScheduleNoticeOfLease>();
-            var json = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RawScheduleNoticeOfLease>>(data);
 
-            if (json != null)
+            try
             {
-                foreach (var item in json)
+                var json = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RawScheduleNoticeOfLease>>(data);
+
+                if (json != null)
                 {
-                    var parsedSchedule = ConvertRawSchedule(item);
-                    result.Add(parsedSchedule);
+                    foreach (var item in json)
+                    {
+                        var parsedSchedule = ConvertRawSchedule(item);
+                        result.Add(parsedSchedule);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
             }
 
             return result;
