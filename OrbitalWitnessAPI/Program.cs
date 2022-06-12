@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace OrbitalWitnessAPI
@@ -12,7 +13,15 @@ namespace OrbitalWitnessAPI
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+            .ConfigureAppConfiguration((hostingContext, config) =>
+                { 
+                    if (hostingContext.HostingEnvironment.EnvironmentName == "Production" ||
+                    hostingContext.HostingEnvironment.EnvironmentName == "Staging")
+                    {
+                        config.AddUserSecrets<Program>();
+                    }
+
+                }).ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 });
